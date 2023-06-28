@@ -3,7 +3,8 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct{
+typedef struct
+{
     char full_name[60];
     char client_id[9];
     int account_id;
@@ -67,7 +68,8 @@ void guardar_cuenta(Account c)
     fclose(f);
 }*/
 
-void print_account(char *id){
+void print_account(char *id)
+{
     FILE *f;
     Account account;
     char filename[200];
@@ -80,7 +82,7 @@ void print_account(char *id){
         printf("Nombre: %s\n", account.full_name);
         printf("DNI: %s\n", account.client_id);
         printf("ID de cuenta: %d\n", account.account_id);
-        printf("Saldo: %d\n", account.balance);
+        printf("Saldo: %.2f\n", (float) account.balance/100);
         printf("\n");
     }
     fclose(f);
@@ -105,13 +107,18 @@ int login(char *id)
     }
 }
 
-int authenticate(char *id, char *password) {
+int authenticate(char *id, char *password)
+{
     FILE *f;
     Account account;
-    if(!(f = fopen("/home/ruby/programacion/c/BankManagement/database/informacion.dat", "rb"))){
+    char filename[200];
+
+    sprintf(filename,"/home/ruby/programacion/c/BankManagement/database/%s.dat", id);
+    if(!(f = fopen(filename, "rb"))){
         printf("Error al abrir el archivo\n");
-        return 3;
+        return 2;
     }
+
     while (fread(&account, sizeof(Account), 1, f)){
         if (strcmp(account.client_id, id) == 0 && strcmp(account.password, password) == 0) {
             fclose(f);
@@ -120,6 +127,44 @@ int authenticate(char *id, char *password) {
     }
     fclose(f);
     return 0;
+}
+
+void deposit(char *id)
+{
+    char filename[255];
+    FILE *f;
+    Account account;
+    int amount;
+
+    sprintf(filename,"/home/ruby/programacion/c/BankManagement/database/%s.dat", id);
+
+    if(!(f = fopen(filename, "rb+"))){
+        printf("Error al abrir el archivo\n");
+        return 1;
+    }
+
+    fread(&account, sizeof(Account), 1, f);
+
+    printf("Introduzca la cuantía a depositar: ");
+    scanf("%d", &amount);
+    amount *= 100;
+
+    account.balance += amount;
+
+    printf("\033[31mSe han depositado %f€\033[0m\n", (float)amount/100);
+    rewind(f);
+    fwrite(&account, sizeof(Account), 1, f);
+
+    fclose(f);
+
+}
+
+void delete_account(char *id)
+{
+    char filename[255];
+    sprintf(filename,"/home/ruby/programacion/c/BankManagement/database/%s.dat", id);
+    if(!remove(filename))
+        printf("Cuenta %s eliminada", id);
 }
 
 void imprimir_menu()
@@ -133,36 +178,50 @@ void imprimir_menu()
 void imprimir_menu_login()
 {
     printf("\n[1] Mostrar datos\n");
-    printf("Seleccione una opción: ");
+    printf("[2] Ingresar dinero\n");
+    printf("[3] Extraer dinero\n");
+    printf("[4] Hacer transferencia\n");
+    printf("[5] Cerrar sesión\n");
+    printf("[6] Eliminar cuenta\n");
+    printf("\nSeleccione una opción: ");
 }
 
 
 
-int main() {
-
+int main()
+{
     srand(time(NULL));
     printf("¡Bienvenido!\n¿Que operación desea realizar?\n");
     int opcion, opcion2;
     char id[9];
     do {
-
         imprimir_menu();
         scanf("%d", &opcion);
-
         switch (opcion) {
             case 1:
                 create_account();
                 break;
             case 2:
                 if(login(id)){
-                    printf("\n\n\033[36mSesion %s activa\033[0m\n", id);
-                    imprimir_menu_login();
-                    scanf("%d", &opcion2);
-
-                    switch(opcion2){
-                        case 1: print_account(id);
-                        break;
-                    }
+                    do{
+                        printf("\n\n\033[36mSesion %s activa\033[0m\n", id);
+                        imprimir_menu_login();
+                        scanf("%d", &opcion2);
+                        switch(opcion2){
+                            case 1: print_account(id);
+                            break;
+                            case 2: deposit(id);
+                            break;
+                            case 3: printf("Todavia no esta disponible esta funcion");
+                            break;
+                            case 4: printf("Todavia no esta disponible esta funcion");
+                            break;
+                            case 5: printf("Todavia no esta disponible esta funcion");
+                            break;
+                            case 6: delete_account(id);
+                            break;
+                        }
+                    } while (opcion2 != 7);
                 }
                 break;
         }
@@ -171,3 +230,4 @@ int main() {
     printf("Saliendo...");
     return 0;
 }
+
