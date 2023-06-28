@@ -145,13 +145,46 @@ void deposit(char *id)
 
     fread(&account, sizeof(Account), 1, f);
 
+    float amountAux;
     printf("Introduzca la cuantía a depositar: ");
-    scanf("%d", &amount);
-    amount *= 100;
+    scanf("%f", &amountAux);
+    amount = amountAux * 100;
 
     account.balance += amount;
 
-    printf("\033[31mSe han depositado %f€\033[0m\n", (float)amount/100);
+    printf("\033[32mSe han depositado %.2f€\033[0m\n", (float)amount/100);
+    printf("Saldo actual: %.2f", (float) account.balance/100);
+    rewind(f);
+    fwrite(&account, sizeof(Account), 1, f);
+
+    fclose(f);
+}
+
+void withdraw(char *id)
+{
+    char filename[255];
+    FILE *f;
+    Account account;
+    int amount;
+
+    sprintf(filename,"/home/ruby/programacion/c/BankManagement/database/%s.dat", id);
+
+    if(!(f = fopen(filename, "rb+"))){
+        printf("Error al abrir el archivo\n");
+        return 1;
+    }
+
+    fread(&account, sizeof(Account), 1, f);
+
+    float amountAux;
+    printf("Introduzca la cuantía a retirar: ");
+    scanf("%f", &amountAux);
+    amount = amountAux * 100;
+
+    account.balance -= amount;
+
+    printf("\033[31mSe han retirado %.2f€\033[0m\n", (float)amount/100);
+    printf("Saldo actual: %.2f", (float) account.balance/100);
     rewind(f);
     fwrite(&account, sizeof(Account), 1, f);
 
@@ -179,7 +212,7 @@ void imprimir_menu_login()
 {
     printf("\n[1] Mostrar datos\n");
     printf("[2] Ingresar dinero\n");
-    printf("[3] Extraer dinero\n");
+    printf("[3] Retirar dinero\n");
     printf("[4] Hacer transferencia\n");
     printf("[5] Cerrar sesión\n");
     printf("[6] Eliminar cuenta\n");
@@ -212,7 +245,7 @@ int main()
                             break;
                             case 2: deposit(id);
                             break;
-                            case 3: printf("Todavia no esta disponible esta funcion");
+                            case 3: withdraw(id);
                             break;
                             case 4: printf("Todavia no esta disponible esta funcion");
                             break;
