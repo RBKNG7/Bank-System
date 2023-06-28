@@ -30,7 +30,7 @@ void create_account()
 
 void guardar_cuenta(Account c)
 {
-    char filename[200];
+    char filename[255];
     FILE *f, *f1;
     sprintf(filename, "/home/ruby/programacion/c/BankManagement/database/%s.dat", c.client_id);
     if(!(f = fopen(filename, "ab"))){
@@ -38,7 +38,7 @@ void guardar_cuenta(Account c)
         return 1;
     }
 
-    if(!(f = fopen("/home/ruby/programacion/c/BankManagement/database/%s.dat", "ab"))){
+    if(!(f1 = fopen("/home/ruby/programacion/c/BankManagement/database/informacion.dat", "ab"))){
         printf("No se ha podido abrir el fichero.");
         return 2;
     }
@@ -50,7 +50,7 @@ void guardar_cuenta(Account c)
     fclose(f1);
 }
 
-void print_account(){
+/*void print_accounts(){ //PARA ADMINS
     FILE *f;
     Account account;
     if(!(f = fopen("/home/ruby/programacion/c/BankManagement/database/informacion.dat", "rb"))){
@@ -65,9 +65,28 @@ void print_account(){
         printf("\n");
     }
     fclose(f);
+}*/
+
+void print_account(char *id){
+    FILE *f;
+    Account account;
+    char filename[200];
+    sprintf(filename,"/home/ruby/programacion/c/BankManagement/database/%s.dat", id);
+    if(!(f = fopen(filename, "rb"))){
+        printf("Error al abrir el archivo\n");
+        return 2;
+    }
+    while (fread(&account, sizeof(Account), 1, f)) {
+        printf("Nombre: %s\n", account.full_name);
+        printf("DNI: %s\n", account.client_id);
+        printf("ID de cuenta: %d\n", account.account_id);
+        printf("Saldo: %d\n", account.balance);
+        printf("\n");
+    }
+    fclose(f);
 }
 
-int login()
+int login(char *id)
 {
     char DNI[9];
     char password[10];
@@ -77,13 +96,13 @@ int login()
     scanf("%s", password);
     if(authenticate(DNI, password)){
         printf("El usuario %s ha iniciado sesion exitosamente", DNI);
+        strcpy(id, DNI);
         return 1;
     }
     else{
         printf("Usted no está registrado como cliente.");
         return 0;
     }
-
 }
 
 int authenticate(char *id, char *password) {
@@ -124,6 +143,7 @@ int main() {
     srand(time(NULL));
     printf("¡Bienvenido!\n¿Que operación desea realizar?\n");
     int opcion, opcion2;
+    char id[9];
     do {
 
         imprimir_menu();
@@ -134,13 +154,13 @@ int main() {
                 create_account();
                 break;
             case 2:
-                if(login())
-                {
+                if(login(id)){
+                    printf("\n\n\033[36mSesion %s activa\033[0m\n", id);
                     imprimir_menu_login();
                     scanf("%d", &opcion2);
 
                     switch(opcion2){
-                        case 1: print_account();
+                        case 1: print_account(id);
                         break;
                     }
                 }
