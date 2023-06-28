@@ -17,7 +17,7 @@ void crear_cuenta()
     Cuenta cuenta;
     getchar();
     puts("Introduzca su nombre y apellidos: ");
-    scanf("%s", cuenta.full_name);
+    scanf("%[^\n]", cuenta.full_name);
     printf("Introduzca su DNI: ");
     scanf("%s", cuenta.client_id);
     printf("Introduzca la contraseña: ");
@@ -82,7 +82,7 @@ int main() {
             default:
                 printf("Escoja una opción válida\n");
         }
-    } while (opcion != 2);
+    } while (opcion != 3);
 
     printf("Saliendo...");
     return 0;
