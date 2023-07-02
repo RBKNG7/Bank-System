@@ -10,3 +10,7 @@ Sesiones activos - H
 No funcionales
 Capar DNI, opciones de menu
 
+
+quehaceres
+Cuando se cierre una sesion, se debe volver al menú
+Meter el codigo repetido para abrir los ficheros en una función aparte

@@ -219,28 +219,27 @@ void imprimir_menu_login()
     printf("\nSeleccione una opción: ");
 }
 
-
-
 int main()
 {
     srand(time(NULL));
     printf("¡Bienvenido!\n¿Que operación desea realizar?\n");
-    int opcion, opcion2;
+    int option, option2, session_active = 0;
     char id[9];
     do {
         imprimir_menu();
-        scanf("%d", &opcion);
-        switch (opcion) {
+        scanf("%d", &option);
+        switch (option) {
             case 1:
                 create_account();
                 break;
             case 2:
                 if(login(id)){
+                    session_active = 1;
                     do{
-                        printf("\n\n\033[36mSesion %s activa\033[0m\n", id);
+                        printf("\n\033[36mSesion %s activa\033[0m\n", id);
                         imprimir_menu_login();
-                        scanf("%d", &opcion2);
-                        switch(opcion2){
+                        scanf("%d", &option2);
+                        switch(option2){
                             case 1: print_account(id);
                             break;
                             case 2: deposit(id);
@@ -249,16 +248,17 @@ int main()
                             break;
                             case 4: printf("Todavia no esta disponible esta funcion");
                             break;
-                            case 5: printf("Todavia no esta disponible esta funcion");
+                            case 5: session_active = 0;
+                                    printf("\033[36mCerrando la sesión %s...\033[0m\n", id);
                             break;
                             case 6: delete_account(id);
                             break;
                         }
-                    } while (opcion2 != 7);
+                    } while (option2 != 7 && session_active == 1);
                 }
                 break;
         }
-    } while (opcion != 3);
+    } while (option != 3);
 
     printf("Saliendo...");
     return 0;

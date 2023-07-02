@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1688326928 source:/home/ruby/programacion/c/BankManagement/Bank_System/main.c
+1688328545 source:/home/ruby/programacion/c/BankManagement/Bank_System/main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
